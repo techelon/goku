@@ -2,7 +2,7 @@
 
 <div align="center">
   
-[![arXiv](https://img.shields.io/badge/arXiv%20paper-2502.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2502.xxxxx)&nbsp;
+[![arXiv](https://img.shields.io/badge/arXiv%20paper-2502.04896-b31b1b.svg)](https://arxiv.org/abs/2502.04896)&nbsp;
 [![project page](https://img.shields.io/badge/Project_page-More_visualizations-green)](https://saiyan-world.github.io/goku/)&nbsp;
   
 </div>
@@ -12,7 +12,7 @@
 </div>
 
 
-> [**Goku: Flow Based Video Generative Foundation Models**](https://saiyan-world.github.io/goku/assets/goku_paper.pdf)<br>
+> [**Goku: Flow Based Video Generative Foundation Models**](https://arxiv.org/abs/2502.04896)<br>
 > [Shoufa Chen](https://www.shoufachen.com), [Chongjian Ge](https://chongjiange.github.io/), [Yuqi Zhang](https://scholar.google.com/citations?user=7FlkVy8AAAAJ), [Yida Zhang](https://openreview.net/profile?id=~Yida_Zhang2), [Fengda Zhu](https://www.zhufengda.net/), [Hao Yang](https://github.com/haoy945), [Hongxiang Hao](https://scholar.google.com/citations?user=173GpBQAAAAJ&hl=zh-CN), [Hui Wu](https://github.com/whlook), [Zhichao Lai](https://github.com/lazychao), [Yifei Hu](https://openreview.net/profile?id=~Yifei_Hu3), [Ting-Che Lin](https://github.com/tcl326), [Shilong Zhang](https://jshilong.github.io/), [Fu Li](https://scholar.google.com/citations?user=2A7_3hoAAAAJ&hl=en), [Chuan Li](https://www.linkedin.com/in/chuanli1101/), [Xing Wang](https://www.linkedin.com/in/xing-wang-49369620/), [Yanghua Peng](https://scholar.google.com/citations?user=Gf9amnoAAAAJ&hl=en), [Peize Sun](https://peizesun.github.io/), [Ping Luo](http://luoping.me/), [Yi Jiang](https://scholar.google.com/citations?user=6dikuoYAAAAJ&hl=en), [Zehuan Yuan](https://shallowyuan.github.io/), [Bingyue Peng](https://www.linkedin.com/in/bingyp), [Xiaobing Liu](https://scholar.google.com/citations?user=1ypDmDwAAAAJ&hl=en)
 > <br>HKU, ByteDance<br>
 
@@ -66,7 +66,7 @@ Goku-T2V achieves an impressive score of **84.85** in VBench, securing the No.2 
 @article{chen2025goku,
   title={Goku: Flow Based Video Generative Foundation Models},
   author={Chen, Shoufa and Ge, Chongjian and Zhang, Yuqi and Zhang, Yida and Zhu, Fengda and Yang, Hao and Hao, Hongxiang and Wu, Hui and Lai, Zhichao and Hu, Yifei and Lin, Ting-Che and Zhang, Shilong and Li, Fu and Li, Chuan and Wang, Xing and Peng, Yanghua and Sun, Peize and Luo, Ping and Jiang, Yi and Yuan, Zehuan and Peng, Bingyue and Liu, Xiaobing},
-  journal={arXiv preprint arXiv:2502.xxxxx},
+  journal={arXiv preprint arXiv:2502.04896},
   year={2025}
 }
 ```
