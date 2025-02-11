@@ -1,0 +1,35 @@
+# borrowed from https://github.com/ShoufaChen/DiffusionDet/blob/main/.gitignore
+# output dir
+/output
+
+*.diff
+
+# compilation and distribution
+__pycache__
+_ext
+*.pyc
+*.pyd
+*.so
+build/
+dist/
+wheels/
+*.egg-info/
+
+# pytorch/python/numpy formats
+*.pth
+*.pkl
+*.pt
+
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~
+
+# editor settings
+.idea
+.vscode
+
+# macOS system files
+.DS_Store

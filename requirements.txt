@@ -1,0 +1,11 @@
+einops
+diffusers==0.32.2
+transformers==4.48.0
+huggingface_hub
+pandas
+cloudpickle
+omegaconf
+hydra-core
+ftfy
+beautifulsoup4
+av==12.0.0
