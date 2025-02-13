@@ -20,6 +20,30 @@ def apply_rotary_emb(
     return out
 
 
+class AdaLayerNorm(nn.Module):
+    def __init__(self, embedding_dim):
+        super().__init__()
+        self.embedding_dim = embedding_dim
+        self.silu = nn.SiLU()
+        self.linear = nn.Linear(embedding_dim, 6 * embedding_dim, bias=True)
+        self.norm = nn.LayerNorm(embedding_dim, elementwise_affine=False, eps=1e-6)
+
+    def forward(self, x, timestep, seq_len_list=None):
+        input_dtype = x.dtype
+        emb = self.linear(self.silu(timestep))
+
+        if seq_len_list is not None:
+            # todo: sequence packing, used for training
+            # equivalent to `torch.repeat_interleave` but faster
+            emb = torch.cat([one_emb[None].expand(repeat_time, -1) for one_emb, repeat_time in zip(emb, seq_len_list)])
+        else:
+            emb = emb.unsqueeze(1)
+
+        shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = emb.float().chunk(6, dim=-1)
+        x = self.norm(x).float() * (1 + scale_msa) + shift_msa
+        return x.to(input_dtype), gate_msa, shift_mlp, scale_mlp, gate_mlp
+
+
 class FeedForward(nn.Module):
     def __init__(self, dim, dim_out=None, mult=4, inner_dim=None, bias=True):
         super().__init__()
@@ -55,8 +79,6 @@ class Attention(nn.Module):
         self.dropout = dropout
         self.head_dim = dim_head
         self.num_heads = heads
-
-        assert (dim_head * heads) == self.inner_dim, f"{dim_head=}, {heads=}, {self.inner_dim=}"
 
         self.q_proj = nn.Linear(self.q_dim, self.inner_dim, bias=bias)
         self.k_proj = nn.Linear(self.kv_dim, self.inner_dim, bias=bias)
@@ -147,5 +169,50 @@ class Attention(nn.Module):
 
 
 class Block(nn.Module):
-    # todo: transformer block
-    pass
+    def __init__(self, dim, num_attention_heads, attention_head_dim, dropout=0.0,
+        cross_attention_dim=None, attention_bias=False,
+    ):
+        super().__init__()
+        self.norm1 = AdaLayerNorm(dim)
+
+        # Self Attention
+        self.attn1 = Attention(q_dim=dim, kv_dim=None, heads=num_attention_heads, dim_head=attention_head_dim, dropout=dropout, bias=attention_bias)
+
+        if cross_attention_dim is not None:
+            # Cross Attention
+            self.norm2 = RMSNorm(dim, eps=1e-6)
+            self.attn2 = Attention(q_dim=dim, kv_dim=cross_attention_dim, heads=num_attention_heads, dim_head=attention_head_dim, dropout=dropout, bias=attention_bias)
+        else:
+            self.attn2 = None
+
+        self.norm3 = RMSNorm(dim, eps=1e-6)
+        self.mlp = FeedForward(dim)
+
+    def forward(
+        self,
+        hidden_states,
+        attention_mask=None,
+        encoder_hidden_states=None,
+        encoder_attention_mask=None,
+        timestep=None,
+        rope_pos_embed=None,
+    ):
+        norm_hidden_states, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.norm1(hidden_states, timestep)
+
+        attn_output = self.attn1(norm_hidden_states, None, attention_mask, False, rope_pos_embed)
+
+        attn_output = (gate_msa * attn_output.float()).to(attn_output.dtype)
+        hidden_states = attn_output + hidden_states
+
+        if self.attn2 is not None:
+            norm_hidden_states = self.norm2(hidden_states)
+            attn_output = self.attn2(norm_hidden_states, encoder_hidden_states, encoder_attention_mask, True, rope_pos_embed)
+            hidden_states = hidden_states + attn_output
+
+        norm_hidden_states = self.norm3(hidden_states)
+        norm_hidden_states = (norm_hidden_states.float() * (1 + scale_mlp) + shift_mlp).to(norm_hidden_states.dtype)
+        ff_output = self.mlp(norm_hidden_states)
+        ff_output = (gate_mlp * ff_output.float()).to(ff_output.dtype)
+        hidden_states = ff_output + hidden_states
+
+        return hidden_states
